@@ -2,7 +2,7 @@
 FROM ubuntu:24.04
 
 # basic setup
-ARG BASIC="fish sudo git vim build-essential curl wget tar unzip make openssh-server openssh-client \
+ARG BASIC="fish sudo git vim build-essential curl wget tar unzip make openssh-client \
   gtkwave libreadline-dev x11-utils x11-apps man-db python3 python3-pip \
   clangd clang-format software-properties-common valgrind unminimize feh sxiv"
 ENV TZ="Asia/Taipei"
@@ -15,8 +15,7 @@ RUN sed -i "s/archive.ubuntu.com/mirror.twds.com.tw/g" /etc/apt/sources.list.d/u
     && apt-get install -y ${BASIC} \
     && yes | unminimize \
     && apt-add-repository ppa:maveonair/helix-editor && apt-get update && apt-get install -y helix \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* \
-    && service ssh start
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # user and workdir setup
 RUN echo "ubuntu:1234" | chpasswd \
@@ -30,7 +29,9 @@ VOLUME /home/ubuntu/workspace
 RUN pip install --user --break-system-package pre-commit
 ENV PATH=/home/ubuntu/.local/bin:$PATH
 
+# copy some files from the host
+RUN mkdir -p /home/ubuntu/.ssh
+COPY ssh_config /home/ubuntu/.ssh/config
 
 # container entrypoint
-ENTRYPOINT ["tail"]
-CMD ["-f", "/dev/null"]
+ENTRYPOINT [ "tail", "-f", "/dev/null" ]

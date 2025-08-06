@@ -16,19 +16,28 @@ RUN dnf update -y \
 
 # mount /cad for using EDA tools
 RUN mkdir /cad && ln -s /cad /usr/cad
-VOLUME /cad
-# mount /sys for fixing Design Compiler error
-VOLUME /sys 
+
+# generate host ssh-keys
+RUN ssh-keygen -q -t rsa -b 2048 -f /etc/ssh/ssh_host_rsa_key -N '' \
+    && ssh-keygen -q -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N '' \
+    && ssh-keygen -t dsa -f /etc/ssh/ssh_host_ed25519_key  -N ''
 
 # add a user "rocky" and give it proper uid/gid
 RUN groupadd -g 1000 rocky \
     && useradd -d /home/rocky -s /bin/bash -u 1000 -g rocky rocky \
+    && sudo usermod -aG wheel rocky \
     && mkdir -p /home/rocky/workspace \
-    && echo "rocky:1234" | chpasswd
-USER rocky
+    && echo "rocky:1234" | chpasswd \
+    && mkdir -p /home/rocky/.ssh \
+    && chmod 777 /home/rocky/.ssh \
+    && sed -i 's/^#PubkeyAuthentication[[:space:]]\+yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+
 WORKDIR /home/rocky/workspace
 VOLUME /home/rocky/workspace
 
+# copy some files from local
+COPY skeleton.tcshrc /home/rocky/.tcshrc
+
 # container entrypoint
-ENTRYPOINT ["tail"]
-CMD ["-f", "/dev/null"]
+EXPOSE 22
+CMD [ "/usr/sbin/sshd", "-D", "-e", "-o", "ListenAddress=0.0.0.0" ]

@@ -1,10 +1,11 @@
 services:
   eda_server:
+    build:
+      context: rocky
+      pull: false
     image: eda_docker_rocky
     container_name: eda_docker_rocky_container
     hostname: rocky
-    build:
-      context: rocky
     volumes:
       - shared-workspace:/home/rocky/workspace
       - /cad:/cad:ro
@@ -15,13 +16,16 @@ services:
     expose:
       - 22
   normal_server:
+    build:
+      context: ubuntu
+      pull: false
     image: eda_docker_ubuntu
     container_name: eda_docker_ubuntu_container
     hostname: ubuntu
-    build:
-      context: ubuntu
+    environment:
+      - DISPLAY=${DISPLAY}
     volumes:
-      - /etc/hosts:/etc/hosts:ro
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - shared-workspace:/home/ubuntu/workspace
     networks:
       - internal

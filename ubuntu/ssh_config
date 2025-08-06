@@ -1,0 +1,4 @@
+Host eda
+    HostName rocky
+    User rocky
+    Port 22
