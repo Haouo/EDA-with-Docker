@@ -15,10 +15,10 @@ To make the X11 Forwarding work successfully, you have to copy the *xauth* infor
 
 ```shell
 # on the host side (before attaching to ubuntu container)
-xauth list $DISPLAY # plaese copy the content it prints
+$ xauth list $DISPLAY # plaese copy the content it prints
 
 # after attacing to ubuntu container
-ssh eda # enter rocky container via ssh
-xauth # use it to enter the interactive CLI of xauth
+$ ssh eda # enter rocky container via ssh
+$ xauth # use it to enter the interactive CLI of xauth
 # then type `add <the content you just copy>` inside the xauth interactive CLI interface
 ```
