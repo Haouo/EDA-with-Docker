@@ -1,0 +1,37 @@
+services:
+  eda_server:
+    image: eda_docker_rocky
+    container_name: eda_docker_rocky_container
+    hostname: rocky
+    build:
+      context: rocky
+    volumes:
+      - shared-workspace:/home/rocky/workspace
+      - /cad:/cad:ro
+      - /sys:/sys:ro # this is important for fixing dc_shell runtime error
+      - /etc/hosts:/etc/hosts:ro # this is important for EDA license checking
+    networks:
+      - internal
+    expose:
+      - 22
+  normal_server:
+    image: eda_docker_ubuntu
+    container_name: eda_docker_ubuntu_container
+    hostname: ubuntu
+    build:
+      context: ubuntu
+    volumes:
+      - /etc/hosts:/etc/hosts:ro
+      - shared-workspace:/home/ubuntu/workspace
+    networks:
+      - internal
+    expose:
+      - 22
+
+networks:
+  internal:
+    driver: bridge
+    external: false
+
+volumes:
+  shared-workspace: {}
