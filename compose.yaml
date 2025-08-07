@@ -6,11 +6,20 @@ services:
     image: eda_docker_rocky
     container_name: eda_docker_rocky_container
     hostname: rocky
+    environment:
+      - DISPLAY=${DISPLAY}
     volumes:
-      - shared-workspace:/home/rocky/workspace
+      # shared work directory
+      - shared_workspace:/home/rocky/workspace
+      # for EDA tools
       - /cad:/cad:ro
       - /sys:/sys:ro # this is important for fixing dc_shell runtime error
       - /etc/hosts:/etc/hosts:ro # this is important for EDA license checking
+      # ssh pubkey from ubuntu container
+      - shared_ssh_key:/home/rocky/.ssh/shared_ssh_key
+      # for GUI applications
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - $PWD/.xauth_temp:/home/rocky/.Xauthority:ro
     networks:
       - internal
     expose:
@@ -25,8 +34,13 @@ services:
     environment:
       - DISPLAY=${DISPLAY}
     volumes:
+      # shared work directory
+      - shared_workspace:/home/ubuntu/workspace 
+      # for GUI applications
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - shared-workspace:/home/ubuntu/workspace
+      - $PWD/.xauth_temp:/home/ubuntu/.Xauthority:ro
+      # shared ssh pubkey
+      - shared_ssh_key:/home/ubuntu/.ssh/shared_ssh_key
     networks:
       - internal
     expose:
@@ -38,4 +52,5 @@ networks:
     external: false
 
 volumes:
-  shared-workspace: {}
+  shared_workspace: {}
+  shared_ssh_key: {}

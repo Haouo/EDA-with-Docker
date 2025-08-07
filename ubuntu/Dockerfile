@@ -4,7 +4,8 @@ FROM ubuntu:24.04
 # basic setup
 ARG BASIC="fish sudo git vim build-essential curl wget tar unzip make openssh-client \
   gtkwave libreadline-dev x11-utils x11-apps man-db python3 python3-pip \
-  clangd clang-format software-properties-common valgrind unminimize feh sxiv"
+  clangd clang-format software-properties-common valgrind unminimize feh sxiv \
+  cmake"
 ENV TZ="Asia/Taipei"
 RUN sed -i "s/archive.ubuntu.com/mirror.twds.com.tw/g" /etc/apt/sources.list.d/ubuntu.sources \
     && apt-get update \
@@ -30,7 +31,10 @@ RUN pip install --user --break-system-package pre-commit
 ENV PATH=/home/ubuntu/.local/bin:$PATH
 
 # copy some files from the host
-RUN mkdir -p /home/ubuntu/.ssh
+RUN mkdir -p /home/ubuntu/.ssh \
+    && ssh-keygen -t rsa -f /home/ubuntu/.ssh/id_rsa -N "" \
+    && mkdir -p /home/ubuntu/.ssh/shared_ssh_key \
+    && cp /home/ubuntu/.ssh/id_rsa.pub /home/ubuntu/.ssh/shared_ssh_key/ubuntu_id_rsa.pub
 COPY ssh_config /home/ubuntu/.ssh/config
 
 # container entrypoint
