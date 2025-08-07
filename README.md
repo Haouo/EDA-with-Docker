@@ -17,13 +17,23 @@ To make the X11 Forwarding work successfully, you have to copy the *xauth* infor
 
 ```shell
 # inside the ubuntu container
-cd /home/aislab
-cp .xauth/.xauth_temp .Xauthority
+$ cd ~
+$ cp .xauth/.xauth_temp .Xauthority
 
 # and then login into rocky container via ssh
-ssh eda
-cd /home/aislab
-cp .xauth/.xauth_temp .Xauthority
+$ ssh eda
+$ cd ~ 
+$ cp .xauth/.xauth_temp .Xauthority
 ```
 
 You only need to do this one time when creating the two containers, or when the content of .Xauthority on the server host is changed.
+
+## How to Execute EDA Tools inside Ubuntu Container?
+
+In order to execute EDA commands smoothly (i.e., without leaving ubuntu container), it leverage the self-defined function `eda_run` in fish shell.
+
+For example, there is a file called `test.sv` and I want to compile it into executable by using Synopsys VCS, I can use the following shell command (in fish shell):
+
+```shell
+$ eda_run vcs -full64 test.sv
+```
