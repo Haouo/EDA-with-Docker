@@ -1,5 +1,13 @@
-# synopsys
-source /usr/cad/synopsys/CIC/vcs.cshrc
-source /usr/cad/synopsys/CIC/synthesis.cshrc
 # cadence
 source /usr/cad/cadence/CIC/xcelium.cshrc
+
+# synopsys
+source /usr/cad/synopsys/CIC/vcs.cshrc
+source /usr/cad/synopsys/CIC/verdi.cshrc
+source /usr/cad/synopsys/CIC/verdi-vcs.cshrc
+source /usr/cad/synopsys/CIC/verdi-ncverilog.cshrc
+source /usr/cad/synopsys/CIC/synthesis.cshrc
+source /usr/cad/synopsys/CIC/lc.cshrc
+source /usr/cad/synopsys/CIC/vc_formal.cshrc
+source /usr/cad/synopsys/CIC/formality.cshrc
+source /usr/cad/synopsys/CIC/spyglass.cshrc

@@ -3,16 +3,27 @@ FROM rockylinux:9.3
 
 # install necessary packages for running EDA tools
 RUN dnf update -y \
-    && dnf install -y \
-    sudo openssh-server openssh-clients ncurses ncurses-devel \
+    && dnf install -y epel-release \
+    && dnf install -y sudo openssh-server openssh-clients \
+    ncurses ncurses-devel \
     xorg-x11-xauth xauth xterm \
     epel-release wget vim tar time csh ksh \
     graphite2 bc iputils telnet make cmake \
     gcc g++ glibc elfutils-libelf \
     libXrandr libGL libXcomposite libnsl pulseaudio-libs-devel \
-    libXi libXp libXp.i686 libXt libXt.i686 \
-    libX11.i686 libXext.i686 libXrender.i686 libXtst.i686 \
+    libXi libXp libXt \
+    libX11 libXext libXrender libXtst \
+    libXScrnSaver procps-ng \
+    numactl-libs libxslt libXtst libXdamage nss \
+    libxkbcommon-x11 libxkbcommon \
+    libxcb xcb-util xcb-util-wm xcb-util-image xcb-util-keysyms \
+    xcb-util-renderutil xcb-util-cursor \
+    ncurses-compat-libs alsa-lib \
     && dnf clean all
+
+# change timezone
+ENV TZ=Asia/Taipei
+RUN echo 'ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime'
 
 # mount /cad for using EDA tools
 RUN mkdir -p /cad/synopsys \
