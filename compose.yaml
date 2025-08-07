@@ -19,7 +19,7 @@ services:
       - shared_ssh_key:/home/aislab/.ssh/shared_ssh_key
       # for GUI applications
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - $PWD/.xauth_temp:/home/aislab/.Xauthority:ro
+      - $PWD/.xauth:/home/aislab/.xauth:ro
     networks:
       - internal
     expose:
@@ -38,7 +38,7 @@ services:
       - shared_workspace:/home/aislab/workspace 
       # for GUI applications
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - $PWD/.xauth_temp:/home/aislab/.Xauthority:ro
+      - $PWD/.xauth:/home/aislab/.xauth:ro
       # shared ssh pubkey
       - shared_ssh_key:/home/aislab/.ssh/shared_ssh_key
     networks:
