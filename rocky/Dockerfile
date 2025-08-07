@@ -27,21 +27,21 @@ RUN ssh-keygen -q -t rsa -b 2048 -f /etc/ssh/ssh_host_rsa_key -N '' \
     && echo "AcceptEnv DISPLAY" | tee -a /etc/ssh/sshd_config
 
 # add a user "rocky" and give it proper uid/gid
-RUN groupadd -g 1000 rocky \
-    && useradd -d /home/rocky -s /usr/bin/tcsh -u 1000 -g rocky rocky \
-    && sudo usermod -aG wheel rocky \
-    && mkdir -p /home/rocky/workspace \
-    && echo "rocky:1234" | chpasswd \
-    && mkdir -p /home/rocky/.ssh \
-    && chmod 700 /home/rocky/.ssh \
+RUN groupadd -g 1000 aislab \
+    && useradd -d /home/aislab -s /usr/bin/tcsh -u 1000 -g aislab aislab \
+    && sudo usermod -aG wheel aislab \
+    && mkdir -p /home/aislab/workspace \
+    && echo "aislab:1234" | chpasswd \
+    && mkdir -p /home/aislab/.ssh \
+    && chmod 700 /home/aislab/.ssh \
     && sed -i 's/^#PubkeyAuthentication[[:space:]]\+yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
 
 # setup work directory and mount point
-WORKDIR /home/rocky/workspace
-VOLUME /home/rocky/workspace
+WORKDIR /home/aislab/workspace
+VOLUME /home/aislab/workspace
 
 # copy some files from local
-COPY skeleton.tcshrc /home/rocky/.tcshrc
+COPY skeleton.tcshrc /home/aislab/.tcshrc
 COPY setup.sh /setup.sh
 RUN chmod +x /setup.sh
 

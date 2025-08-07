@@ -10,16 +10,16 @@ services:
       - DISPLAY=${DISPLAY}
     volumes:
       # shared work directory
-      - shared_workspace:/home/rocky/workspace
+      - shared_workspace:/home/aislab/workspace
       # for EDA tools
       - /cad:/cad:ro
       - /sys:/sys:ro # this is important for fixing dc_shell runtime error
       - /etc/hosts:/etc/hosts:ro # this is important for EDA license checking
       # ssh pubkey from ubuntu container
-      - shared_ssh_key:/home/rocky/.ssh/shared_ssh_key
+      - shared_ssh_key:/home/aislab/.ssh/shared_ssh_key
       # for GUI applications
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - $PWD/.xauth_temp:/home/rocky/.Xauthority:ro
+      - $PWD/.xauth_temp:/home/aislab/.Xauthority:ro
     networks:
       - internal
     expose:
@@ -35,12 +35,12 @@ services:
       - DISPLAY=${DISPLAY}
     volumes:
       # shared work directory
-      - shared_workspace:/home/ubuntu/workspace 
+      - shared_workspace:/home/aislab/workspace 
       # for GUI applications
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - $PWD/.xauth_temp:/home/ubuntu/.Xauthority:ro
+      - $PWD/.xauth_temp:/home/aislab/.Xauthority:ro
       # shared ssh pubkey
-      - shared_ssh_key:/home/ubuntu/.ssh/shared_ssh_key
+      - shared_ssh_key:/home/aislab/.ssh/shared_ssh_key
     networks:
       - internal
     expose:

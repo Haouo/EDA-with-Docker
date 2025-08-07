@@ -19,23 +19,33 @@ RUN sed -i "s/archive.ubuntu.com/mirror.twds.com.tw/g" /etc/apt/sources.list.d/u
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # user and workdir setup
-RUN echo "ubuntu:1234" | chpasswd \
-    && mkdir /home/ubuntu/workspace \
-    && chown -R ubuntu:ubuntu /home/ubuntu/workspace
-USER ubuntu
-WORKDIR /home/ubuntu/workspace
-VOLUME /home/ubuntu/workspace
+RUN groupmod -n aislab ubuntu \
+    && usermod -l aislab -d /home/aislab -m ubuntu \
+    && echo "aislab:1234" | chpasswd \
+    && mkdir /home/aislab/workspace \
+    && chown -R aislab:aislab /home/aislab/workspace
+USER aislab
+WORKDIR /home/aislab/workspace
+VOLUME /home/aislab/workspace
 
 # Install pre-commit framework for Git pre-commit hooks
 RUN pip install --user --break-system-package pre-commit
-ENV PATH=/home/ubuntu/.local/bin:$PATH
+ENV PATH=/home/aislab/.local/bin:$PATH
 
 # copy some files from the host
-RUN mkdir -p /home/ubuntu/.ssh \
-    && ssh-keygen -t rsa -f /home/ubuntu/.ssh/id_rsa -N "" \
-    && mkdir -p /home/ubuntu/.ssh/shared_ssh_key \
-    && cp /home/ubuntu/.ssh/id_rsa.pub /home/ubuntu/.ssh/shared_ssh_key/ubuntu_id_rsa.pub
-COPY ssh_config /home/ubuntu/.ssh/config
+RUN mkdir -p /home/aislab/.ssh \
+    && ssh-keygen -t rsa -f /home/aislab/.ssh/id_rsa -N "" \
+    && mkdir -p /home/aislab/.ssh/shared_ssh_key \
+    && cp /home/aislab/.ssh/id_rsa.pub /home/aislab/.ssh/shared_ssh_key/ubuntu_id_rsa.pub
+COPY ssh_config /home/aislab/.ssh/config
+
+# add fish util function for runnung EDA tools on remote rocky container
+RUN mkdir -p /home/aislab/.config/fish \
+    && echo 'function eda_run' >> /home/aislab/.config/fish/config.fish \
+    && echo '    set -l cmd "cd \"$PWD\" && $argv"' >> /home/aislab/.config/fish/config.fish \
+    && echo '    ssh eda $cmd' >> /home/aislab/.config/fish/config.fish \
+    && echo 'end' >> /home/aislab/.config/fish/config.fish
 
 # container entrypoint
-ENTRYPOINT [ "tail", "-f", "/dev/null" ]
+# ENTRYPOINT [ "tail", "-f", "/dev/null" ]
+ENTRYPOINT [ "sleep", "infinity" ]

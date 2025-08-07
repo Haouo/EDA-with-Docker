@@ -1,5 +1,5 @@
 Host eda
     HostName rocky
-    User rocky
+    User aislab
     Port 22
     SendEnv DISPLAY
