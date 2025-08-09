@@ -1,3 +1,6 @@
+# siemens
+source /usr/cad/mentor/CIC/calibre.cshrc
+
 # cadence
 source /usr/cad/cadence/CIC/xcelium.cshrc
 
@@ -11,3 +14,7 @@ source /usr/cad/synopsys/CIC/lc.cshrc
 source /usr/cad/synopsys/CIC/vc_formal.cshrc
 source /usr/cad/synopsys/CIC/formality.cshrc
 source /usr/cad/synopsys/CIC/spyglass.cshrc
+source /usr/cad/synopsys/CIC/icc2.cshrc
+source /usr/cad/synopsys/CIC/fc.cshrc
+source /usr/cad/synopsys/CIC/primetime.cshrc
+source /usr/cad/synopsys/CIC/primerail.cshrc

@@ -1,5 +1,5 @@
 # specify official Rocky Linux 9.3 image as base image
-FROM rockylinux:9.3
+FROM rockylinux:9
 
 # install necessary packages for running EDA tools
 RUN dnf update -y \
