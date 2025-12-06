@@ -1,7 +1,8 @@
 services:
   eda_server:
     build:
-      context: rocky
+      context: .
+      dockerfile: rocky/Dockerfile
       pull: false
     image: eda_docker_rocky
     container_name: eda_docker_rocky_container
@@ -19,14 +20,14 @@ services:
       - shared_ssh_key:/home/aislab/.ssh/shared_ssh_key
       # for GUI applications
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - $PWD/.xauth:/home/aislab/.xauth:ro
     networks:
       - internal
     expose:
       - 22
-  normal_server:
+  ubuntu_server:
     build:
-      context: ubuntu
+      context: .
+      dockerfile: ubuntu/Dockerfile
       pull: false
     image: eda_docker_ubuntu
     container_name: eda_docker_ubuntu_container
@@ -38,7 +39,6 @@ services:
       - shared_workspace:/home/aislab/workspace 
       # for GUI applications
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - $PWD/.xauth:/home/aislab/.xauth:ro
       # shared ssh pubkey
       - shared_ssh_key:/home/aislab/.ssh/shared_ssh_key
     networks:

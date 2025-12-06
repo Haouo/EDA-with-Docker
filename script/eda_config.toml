@@ -1,0 +1,12 @@
+[default]
+wrapper_path = "/usr/local/bin/eda_proxy.py"
+bin_dir = "/usr/local/bin"
+
+[tools]
+commands = [
+    "vcs",
+    "verdi",
+    "nWave",
+    "dv"
+]
+
