@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os
 import sys
-import shutil
 from pathlib import Path
 
 try:
@@ -104,4 +103,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

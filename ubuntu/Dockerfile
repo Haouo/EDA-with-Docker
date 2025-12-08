@@ -36,7 +36,7 @@ ENV PATH=/home/$USER_NAME/.local/bin:$PATH
 
 # copy some files from the host
 RUN mkdir -p /home/$USER_NAME/.ssh
-COPY --chown=$USER_NAME:$USER_NAME $PWD/../secrets/id_ed25519 /home/$USER_NAME/.ssh/id_ed25519
+COPY --chown=$USER_NAME:$USER_NAME secrets/id_ed25519 /home/$USER_NAME/.ssh/id_ed25519
 COPY ubuntu/ssh_config /home/$USER_NAME/.ssh/config
 RUN chmod 600 /home/$USER_NAME/.ssh/id_ed25519
 
@@ -44,9 +44,9 @@ RUN chmod 600 /home/$USER_NAME/.ssh/id_ed25519
 COPY script/eda_proxy.py /usr/local/bin/eda_proxy.py
 COPY script/eda_config.toml /usr/local/bin/eda_config.toml
 COPY script/setup_symlinks.py /usr/local/bin/setup_symlinks.py
-# RUN chmod +x /usr/local/bin/eda_proxy.py && \
-#     chmod +x /usr/local/bin/setup_links.py && \
-#     python3 /usr/local/bin/setup_links.py
+RUN chmod +x /usr/local/bin/eda_proxy.py \
+    && chmod +x /usr/local/bin/setup_links.py \
+    && python3 /usr/local/bin/setup_links.py
 
 # container entrypoint
 ENTRYPOINT [ "sleep", "infinity" ]

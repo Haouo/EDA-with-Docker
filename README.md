@@ -1,6 +1,10 @@
-# Completely Isolated Development Environment with Docker Compose
+# EDA with Docker
+
+## Brief Introduction to The Architecture
 
 ## Introduction
+
+![](eda-with-docker.png)
 
 This is a workaround about how to build a completely isolated development environment for the scenario that you need both complicated software toolchain and EDA tools for digital IC design.
 
@@ -11,29 +15,46 @@ More precisely, the suggested usage is that you use `docker exec -it <container_
 
 The reason why it uses two container respectively is that ubuntu is more suitable for toolchain/package installation, while the EDA tools are supposed to run on RHEL/RockyLinux.
 
-## About X11 Forwarding and GUI Applications
+## How To Use EDA-with-Docker
 
-To make the X11 Forwarding work successfully, you have to copy the *xauth* information from the host (on the server, the word "host" is relative to the container) inside the rocky container. At the first time you create the containers (when you execute `docker compose up -d`), plaese follow these instructions:
+### Generate SSH Keys on Host
 
-```shell
-# inside the ubuntu container
-$ cd ~
-$ cp .xauth/.xauth_temp .Xauthority
+IN order to make the ssh connection between Ubuntu container and Rocky container be without password, we must generate a pair of ssh key on the host before builing images.
+During the building process of images, the public key will be copied into the Rocky container, and the private key will be copied into the Ubuntu container.
 
-# and then login into rocky container via ssh
-$ ssh eda
-$ cd ~ 
-$ cp .xauth/.xauth_temp .Xauthority
+To generate a pair of ssh key, please execute the following commands:
+
+```bash=
+$ mkdir secrets
+$ ssh-keygen -f ./secrets/id_ed25519 -N ''
 ```
 
-You only need to do this one time when creating the two containers, or when the content of .Xauthority on the server host is changed.
+### Build Images
+
+The second step is to build both the Ubuntu image and the Rocky image with the given Dockerfile(s).
+
+```bash=
+$ docker compose build
+```
+
+### Start the Docker Compose
+
+After building the two images, we can now start the docker compose.
+
+```bash
+$ docker compose up -d
+```
+
+### Attach to The Ubuntu Container with Fish Shell
+
+```bash
+$ ./attach.sh
+```
+
+## About GUI Applications inside Container
+
+TBD
 
 ## How to Execute EDA Tools inside Ubuntu Container?
 
-In order to execute EDA commands smoothly (i.e., without leaving ubuntu container), it leverage the self-defined function `eda_run` in fish shell.
-
-For example, there is a file called `test.sv` and I want to compile it into executable by using Synopsys VCS, I can use the following shell command (in fish shell):
-
-```shell
-$ eda_run vcs -full64 test.sv
-```
+In order to make seamless execution flow for EDA tools, TBD

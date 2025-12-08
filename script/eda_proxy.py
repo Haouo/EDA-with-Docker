@@ -12,14 +12,17 @@ DEFAULT_CONFIG = {
         "remote_host": "eda",
         "remote_user": "aislab",
         "ssh_options": [
-            "-o", "StrictHostKeyChecking=no",
-            "-o", "UserKnownHostsFile=/dev/null",
-            "-o", "LogLevel=QUIET",
-        ]
+            "-o",
+            "StrictHostKeyChecking=no",
+            "-o",
+            "UserKnownHostsFile=/dev/null",
+            "-o",
+            "LogLevel=QUIET",
+        ],
     },
     "tools": {
         "gui_tools": ["verdi", "dve", "nWave", "design_vision", "icc2_gui"],
-    }
+    },
 }
 
 CONFIG_FILE = "/usr/local/bin/eda_config.toml"
@@ -36,7 +39,8 @@ except ImportError:
     except ImportError:
         toml = None
 
-def load_config():
+
+def load_config() -> dict:
     """Load user config, fallback to DEFAULT_CONFIG."""
     config = DEFAULT_CONFIG.copy()
 
@@ -131,4 +135,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
