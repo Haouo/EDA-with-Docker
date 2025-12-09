@@ -2,11 +2,39 @@
 wrapper_path = "/usr/local/bin/eda_proxy.py"
 bin_dir = "/usr/local/bin"
 
-[tools]
-commands = [
-    "vcs",
-    "verdi",
-    "nWave",
-    "dv"
+[connection]
+remote_host = "eda"
+remote_user = "aislab"
+ssh_options = [
+    "-o",
+    "StrictHostKeyChecking=no",
+    "-o",
+    "UserKnownHostsFile=/dev/null",
+    "-o",
+    "LogLevel=QUIET",
 ]
 
+[eda_tools]
+commands = [
+    # Synopsys VCS
+    "vcs",
+    # Verdi
+    "verdi",
+    "nWave",
+    # Design Compiler
+    "dv",
+    "dc_shell",
+    # PrimeTime
+    "pt_shell",
+    # VC Static and VC Formal
+    "vc_static_shell",
+    "vcf",
+    # Cadence XCELIUM
+    "xrun",
+    # Cadence Innovus
+    "innovus",
+]
+
+# Project-specific environment variable passthrough
+[environment.cva6]
+passthrough = ["RISCV", "NUM_JOBS", "DV_SIMULATOR"]
