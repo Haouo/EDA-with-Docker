@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 import os
-import sys
 import shlex
 import subprocess
+import sys
+from typing import Any
+
 import tomllib as toml
 
 # ==========================
 # Default configuration
 # ==========================
-DEFAULT_CONFIG = {
+DEFAULT_CONFIG: dict[str, Any] = {
     "connection": {
         "remote_host": "eda",
         "remote_user": "aislab",
@@ -58,8 +60,9 @@ def load_config() -> dict:
 # ==========================
 # Build remote SSH command
 # ==========================
-def build_ssh_command(config: dict, tool_name: str, remote_cmd: str):
-    ssh_cmd = ["ssh"]
+def build_ssh_command(config: dict, remote_cmd: str):
+    # the basic ssh command prefix
+    ssh_cmd: list[str] = ["ssh"]
 
     # SSH options
     ssh_cmd += config["connection"]["ssh_options"]
@@ -69,8 +72,8 @@ def build_ssh_command(config: dict, tool_name: str, remote_cmd: str):
         ssh_cmd.append("-t")
 
     # get remote hostname and username
-    remote_user = config["connection"]["remote_user"]
-    remote_host = config["connection"]["remote_host"]
+    remote_user: str = config["connection"]["remote_user"]
+    remote_host: str = config["connection"]["remote_host"]
     ssh_cmd.append(f"{remote_user}@{remote_host}")
 
     # Append actual remote command
@@ -86,7 +89,7 @@ def main():
     config = load_config()
 
     # get the tool name
-    tool_name = os.path.basename(sys.argv[0])
+    tool_name: str= os.path.basename(sys.argv[0])
 
     # Disallow direct script execution
     if tool_name.endswith(".py"):
@@ -94,7 +97,7 @@ def main():
         sys.exit(1)
 
     # get current working directory path
-    current_dir = os.getcwd()
+    current_dir: str= os.getcwd()
 
     # quote arguments safely
     try:
@@ -105,23 +108,27 @@ def main():
     # get passthrough env variables
     env_conf: dict = config.get("environment", {})
     vars_to_export = set()
+    env_export = []
     current_proj = os.environ.get("CURRENT_PROJECT")
     if current_proj:
         proj_env_conf = env_conf.get(current_proj, {})
         if proj_env_conf:
             proj_vars = proj_env_conf.get("passthrough", [])
             vars_to_export.update(proj_vars)
-
-    env_export = []
     for var in vars_to_export:
         val = os.environ.get(var)
         if val:
-            env_export.append(
-                f"setenv {var} {val}"
-            )  # for tcsh, it must use "setenv" instead of "set" or "export"
+            # for tcsh, it must use "setenv" instead of "set" or "export"
+            env_export.append(f"setenv {var} {val}")
     if tool_name in config["eda_tools"]["commands"]:
         env_export.append("setenv EDA_ENABLE 1")
 
+    # check whether current tool_name is EDA tools
+    eda_tools_list: list = config["eda_tools"]["commands"]
+    if tool_name in eda_tools_list:
+        env_export.append("setenv EDA_ENABLE 1")
+
+    # generate final env_prefix_cmd
     env_prefix_cmd = "; ".join(env_export)
     if env_prefix_cmd:
         env_prefix_cmd += "; "
@@ -135,7 +142,7 @@ def main():
     remote_cmd = env_prefix_cmd + remote_cmd
 
     # build complete ssh command
-    ssh_cmd = build_ssh_command(config, tool_name, remote_cmd)
+    ssh_cmd = build_ssh_command(config, remote_cmd)
 
     if DEBUG:
         print("[DEBUG] SSH command:", ssh_cmd)
