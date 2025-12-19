@@ -16,7 +16,6 @@ services:
       - /cad:/cad:ro
       - /sys:/sys:ro # this is important for fixing dc_shell runtime error
       - /etc/hosts:/etc/hosts:ro # this is important for EDA license checkine
-      - /cad/modulefiles:/etc/modulefiles # enables envmodules for EDA tools
       # for GUI applications
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     networks:
