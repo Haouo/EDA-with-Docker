@@ -15,9 +15,7 @@ services:
       # for EDA tools
       - /cad:/cad:ro
       - /sys:/sys:ro # this is important for fixing dc_shell runtime error
-      - /etc/hosts:/etc/hosts:ro # this is important for EDA license checking
-      # ssh pubkey from ubuntu container
-      - shared_ssh_key:/home/aislab/.ssh/shared_ssh_key
+      - /etc/hosts:/etc/hosts:ro # this is important for EDA license checkine
       # for GUI applications
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     networks:
@@ -39,8 +37,6 @@ services:
       - shared_workspace:/home/aislab/workspace 
       # for GUI applications
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      # shared ssh pubkey
-      - shared_ssh_key:/home/aislab/.ssh/shared_ssh_key
     networks:
       - internal
     expose:

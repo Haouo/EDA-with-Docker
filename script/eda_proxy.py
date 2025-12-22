@@ -7,7 +7,6 @@ from pyproxy.configuration import EDAConfig
 from pyproxy.environment_holder import EnvironmentHandler
 from pyproxy.ssh_executor import SSHExecutor
 
-
 if __name__ == "__main__":
     DEBUG = True
     # get the current tool name

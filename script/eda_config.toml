@@ -36,5 +36,7 @@ commands = [
 ]
 
 # Project-specific environment variable passthrough
+[environment.default]
+passthrough = ["EDA_ENABLE"]
 [environment.cva6]
 passthrough = ["RISCV", "NUM_JOBS", "DV_SIMULATOR"]
