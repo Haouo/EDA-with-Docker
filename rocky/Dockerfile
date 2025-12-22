@@ -66,7 +66,9 @@ RUN curl -LJO https://github.com/envmodules/modules/releases/download/v5.6.1/mod
     && cd modules-5.6.1 \
     && ./configure \
     && make \
-    && make install
+    && make install \
+    && ln -s /usr/local/Modules/init/profile.sh /etc/profile.d/modules.sh \
+    && ln -s /usr/local/Modules/init/profile.csh /etc/profile.d/modules.csh
 
 # setup work directory and mount point
 WORKDIR /home/$USER_NAME/workspace
