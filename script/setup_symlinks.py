@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-import os
 import logging
+import os
 from pathlib import Path
+
 import tomllib as toml
 
 
