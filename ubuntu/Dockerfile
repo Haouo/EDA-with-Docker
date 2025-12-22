@@ -20,6 +20,7 @@ RUN sed -i "s/archive.ubuntu.com/mirror.twds.com.tw/g" /etc/apt/sources.list.d/u
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # prepare wrapper scripts for running EDA tools in Rocky side
+COPY pyproxy /usr/local/bin/pyproxy
 COPY script/eda_proxy.py /usr/local/bin/eda_proxy.py
 COPY script/eda_config.toml /usr/local/bin/eda_config.toml
 COPY script/setup_symlinks.py /usr/local/bin/setup_symlinks.py
