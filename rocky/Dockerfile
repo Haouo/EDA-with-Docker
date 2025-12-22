@@ -22,7 +22,7 @@ RUN dnf update -y \
     libxcb xcb-util xcb-util-wm xcb-util-image xcb-util-keysyms \
     xcb-util-renderutil xcb-util-cursor \
     ncurses-compat-libs alsa-lib \
-    tcl tcl-devel environment-modules \
+    tcl tcl-devel \
     libmng libjpeg \
     && dnf clean all
 
