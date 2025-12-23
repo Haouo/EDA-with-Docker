@@ -1,0 +1,46 @@
+import os
+import sys
+from pathlib import Path
+
+from .config import AppConfig
+from .strategies import TcshStrategy
+from .builder import RemotePayloadBuilder
+from .executors import SSHExecutor
+
+
+def run():
+    # Setup
+    DEBUG_MODE = os.environ.get("EDA_DEBUG", "0") == "1"
+    CONFIG_PATH = Path("/usr/local/bin/eda_config.toml")
+
+    # 1. Initialize Configuration
+    try:
+        config = AppConfig.load(CONFIG_PATH, debug=DEBUG_MODE)
+    except Exception as e:
+        sys.exit(f"Configuration failure: {e}")
+
+    # 2. Validate Tool Name
+    tool_path = Path(sys.argv[0])
+    tool_name = tool_path.name
+
+    if tool_path.suffix == ".py":
+        sys.exit(f"Error: Do not run {tool_name} directly. Use a symlink.")
+
+    # 3. Build Payload
+    # Dependency Injection: We can easily switch to BashStrategy if needed
+    shell_strategy = TcshStrategy()
+    builder = RemotePayloadBuilder(config, shell_strategy)
+
+    remote_command = (
+        builder.with_passthrough_env()
+        .with_eda_enable(tool_name)
+        .build(tool_name, sys.argv[1:])
+    )
+
+    # 4. Execute
+    executor = SSHExecutor(config.connection, debug=DEBUG_MODE)
+    sys.exit(executor.execute(remote_command))
+
+
+if __name__ == "__main__":
+    run()
