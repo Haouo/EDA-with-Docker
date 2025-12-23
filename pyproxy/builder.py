@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-import shlex
 import os
+import shlex
 from typing import List
 
-from .config import AppConfig
-from .strategies import ShellStrategy
+from .config import EDAConfig
+from .shell_strategies import ShellStrategy
 
 
 class RemotePayloadBuilder:
-    def __init__(self, config: AppConfig, shell: ShellStrategy):
+    def __init__(self, config: EDAConfig, shell: ShellStrategy):
         self.config = config
         self.shell = shell
         self._env_cmds: List[str] = []
@@ -23,12 +23,6 @@ class RemotePayloadBuilder:
             val = os.environ.get(var)
             if val is not None:
                 self._env_cmds.append(self.shell.set_env(var, val))
-        return self
-
-    def with_eda_enable(self, tool_name: str) -> RemotePayloadBuilder:
-        """Injects EDA_ENABLE flag if applicable"""
-        if tool_name in self.config.tools.commands:
-            self._env_cmds.append(self.shell.set_env("EDA_ENABLE", "1"))
         return self
 
     def build(self, tool_name: str, args: List[str]) -> str:

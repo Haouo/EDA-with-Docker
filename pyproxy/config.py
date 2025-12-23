@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 import sys
+import tomllib as toml
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Dict, Set, Optional
-import tomllib as toml
+from typing import Dict, List, Optional, Set
+
+
+@dataclass(frozen=True)
+class PathConfig:
+    wrapper: str = "/usr/local/bin/eda_proxy.py"
+    bin_dir: str = "/usr/local/bin"
 
 
 @dataclass(frozen=True)
@@ -40,15 +46,17 @@ class EnvironmentConfig:
 
 
 @dataclass
-class AppConfig:
+class EDAConfig:
+    path: PathConfig
     connection: ConnectionConfig
     tools: ToolConfig
     environment: EnvironmentConfig
     debug: bool = False
 
     @classmethod
-    def load(cls, path: Path, debug: bool = False) -> AppConfig:
+    def load(cls, path: Path, debug: bool = False) -> EDAConfig:
         defaults = cls(
+            path=PathConfig(),
             connection=ConnectionConfig(),
             tools=ToolConfig(),
             environment=EnvironmentConfig(),
@@ -62,11 +70,13 @@ class AppConfig:
                 data = toml.load(f)
 
             # Unpacking nested dicts into Dataclasses (Simple Mapping)
+            path_data = data.get("path", {})
             conn_data = data.get("connection", {})
             tool_data = data.get("eda_tools", {})
             env_data = data.get("environment", {})
 
             return cls(
+                path=PathConfig(**path_data) if path_data else defaults.path,
                 connection=ConnectionConfig(**conn_data)
                 if conn_data
                 else defaults.connection,

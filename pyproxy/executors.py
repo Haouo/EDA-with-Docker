@@ -1,6 +1,6 @@
+import shlex
 import subprocess
 import sys
-import shlex
 
 from .config import ConnectionConfig
 
@@ -14,10 +14,12 @@ class SSHExecutor:
         ssh_cmd = ["ssh"]
         ssh_cmd.extend(self.config.ssh_options)
 
-        # Smart TTY handling
+        # TTY handling
         if sys.stdin.isatty():
             ssh_cmd.append("-t")
 
+        # "ssh command" + "target remote" + "payload"
+        # the payload includes env-passthrough and other arguments from the EDA command
         target = f"{self.config.remote_user}@{self.config.remote_host}"
         ssh_cmd.append(target)
         ssh_cmd.append(remote_payload)

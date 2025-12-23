@@ -1,5 +1,5 @@
-[default]
-wrapper_path = "/usr/local/bin/eda_proxy.py"
+[Path]
+wrapper = "/usr/local/bin/eda_proxy.py"
 bin_dir = "/usr/local/bin"
 
 [connection]
@@ -24,8 +24,16 @@ commands = [
     # Design Compiler
     "dv",
     "dc_shell",
+    # ICC and ICC2
+    "icc_shell",
+    "icc2_shell",
+    # Fusion Compiler
+    "fc_shell",
     # PrimeTime
     "pt_shell",
+    # Formality
+    "fm",
+    "fm_shell",
     # VC Static and VC Formal
     "vc_static_shell",
     "vcf",
@@ -36,7 +44,5 @@ commands = [
 ]
 
 # Project-specific environment variable passthrough
-[environment.default]
-passthrough = ["EDA_ENABLE"]
 [environment.cva6]
 passthrough = ["RISCV", "NUM_JOBS", "DV_SIMULATOR"]

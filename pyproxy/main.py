@@ -2,20 +2,20 @@ import os
 import sys
 from pathlib import Path
 
-from .config import AppConfig
-from .strategies import TcshStrategy
 from .builder import RemotePayloadBuilder
+from .config import EDAConfig
 from .executors import SSHExecutor
+from .shell_strategies import TcshStrategy
 
 
 def run():
     # Setup
-    DEBUG_MODE = os.environ.get("EDA_DEBUG", "0") == "1"
+    DEBUG_MODE = os.environ.get("EDA_PROXY_DEBUG", "0") == "1"
     CONFIG_PATH = Path("/usr/local/bin/eda_config.toml")
 
     # 1. Initialize Configuration
     try:
-        config = AppConfig.load(CONFIG_PATH, debug=DEBUG_MODE)
+        config = EDAConfig.load(CONFIG_PATH, debug=DEBUG_MODE)
     except Exception as e:
         sys.exit(f"Configuration failure: {e}")
 
@@ -30,17 +30,8 @@ def run():
     # Dependency Injection: We can easily switch to BashStrategy if needed
     shell_strategy = TcshStrategy()
     builder = RemotePayloadBuilder(config, shell_strategy)
-
-    remote_command = (
-        builder.with_passthrough_env()
-        .with_eda_enable(tool_name)
-        .build(tool_name, sys.argv[1:])
-    )
+    remote_command = builder.with_passthrough_env().build(tool_name, sys.argv[1:])
 
     # 4. Execute
     executor = SSHExecutor(config.connection, debug=DEBUG_MODE)
     sys.exit(executor.execute(remote_command))
-
-
-if __name__ == "__main__":
-    run()
