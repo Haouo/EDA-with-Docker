@@ -12,6 +12,7 @@ class RemotePayloadBuilder:
     def __init__(self, config: EDAConfig, shell: ShellStrategy):
         self.config = config
         self.shell = shell
+        self._ml_cmd: str = ""
         self._env_cmds: List[str] = []
 
     def with_passthrough_env(self) -> RemotePayloadBuilder:
@@ -23,6 +24,12 @@ class RemotePayloadBuilder:
             val = os.environ.get(var)
             if val is not None:
                 self._env_cmds.append(self.shell.set_env(var, val))
+        return self
+
+    def with_envmodules_enable(self, tool_name: str) -> RemotePayloadBuilder:
+        """Injects envmodules load command based on the tool_name"""
+        corresponding_ml_name = self.config.tools.get_module_name(tool_name)
+        self._ml_cmd = "ml " + corresponding_ml_name if tool_name != "delegate" else ""
         return self
 
     def build(self, tool_name: str, args: List[str]) -> str:
@@ -44,5 +51,9 @@ class RemotePayloadBuilder:
         # Note: Using '&&' logic for the final execution step in chain is strategy dependent
         # but here we simplify by letting the strategy chain them (likely via ';')
 
-        full_sequence = self._env_cmds + [cd_cmd, exec_cmd]
+        full_sequence = self._env_cmds + (
+            [self._ml_cmd, cd_cmd, exec_cmd]
+            if self._ml_cmd != ""
+            else [cd_cmd, exec_cmd]
+        )
         return self.shell.chain_commands(full_sequence)

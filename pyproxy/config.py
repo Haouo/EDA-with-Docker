@@ -32,6 +32,10 @@ class ConnectionConfig:
 @dataclass(frozen=True)
 class ToolConfig:
     commands: Set[str] = field(default_factory=set)
+    module_map: Dict[str, str] = field(default_factory=dict)
+
+    def get_module_name(self, tool_name: str) -> str:
+        return self.module_map.get(tool_name, "")
 
 
 @dataclass(frozen=True)
@@ -80,7 +84,7 @@ class EDAConfig:
                 connection=ConnectionConfig(**conn_data)
                 if conn_data
                 else defaults.connection,
-                tools=ToolConfig(commands=set(tool_data.get("commands", []))),
+                tools=ToolConfig(**tool_data) if tool_data else defaults.tools,
                 environment=EnvironmentConfig(project_map=env_data),
                 debug=debug,
             )

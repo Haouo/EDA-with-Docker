@@ -35,8 +35,8 @@ def main():
     config = load_config("/usr/local/bin/eda_config.toml")
 
     # check wrapper and binary directory path
-    wrapper_path = Path(get_config_value(config, "default", "wrapper_path")).resolve()
-    bin_dir = Path(get_config_value(config, "default", "bin_dir")).resolve()
+    wrapper_path = Path(get_config_value(config, "path", "wrapper")).resolve()
+    bin_dir = Path(get_config_value(config, "path", "bin_dir")).resolve()
 
     # Check wrapper existence
     if not wrapper_path.exists():

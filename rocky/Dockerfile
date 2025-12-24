@@ -48,7 +48,7 @@ RUN ssh-keygen -A \
 
 # add a user "rocky" and give it proper uid/gid
 RUN groupadd -g 1000 $USER_NAME \
-    && useradd -d /home/$USER_NAME -s /usr/bin/bash -u 1000 -g $USER_NAME $USER_NAME \
+    && useradd -d /home/$USER_NAME -s /usr/bin/tcsh -u 1000 -g $USER_NAME $USER_NAME \
     && sudo usermod -aG wheel $USER_NAME \
     && mkdir -p /home/$USER_NAME/workspace \
     && echo "$USER_NAME:1234" | chpasswd \
@@ -73,9 +73,6 @@ RUN curl -LJO https://github.com/envmodules/modules/releases/download/v5.6.1/mod
 # setup work directory and mount point
 WORKDIR /home/$USER_NAME/workspace
 VOLUME /home/$USER_NAME/workspace
-
-# set default shell to be tcsh
-ENV SHELL /usr/bin/bash
 
 # container entrypoint
 EXPOSE 22
