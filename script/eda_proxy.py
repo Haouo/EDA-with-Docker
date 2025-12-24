@@ -1,29 +1,46 @@
 #!/usr/bin/env python3
 import os
 import sys
+from pathlib import Path
 
-from pyproxy.command_builder import RemotePayloadBuilder
-from pyproxy.configuration import EDAConfig
-from pyproxy.environment_holder import EnvironmentHandler
-from pyproxy.ssh_executor import SSHExecutor
+from pyproxy.builder import RemotePayloadBuilder
+from pyproxy.config import EDAConfig
+from pyproxy.executors import SSHExecutor
+from pyproxy.shell_strategies import TcshStrategy
+
+
+def run_proxy():
+    # Setup
+    DEBUG_MODE = os.environ.get("EDA_PROXY_DEBUG", "0") == "1"
+    CONFIG_PATH = Path("/usr/local/bin/eda_config.toml")
+
+    # 1. Initialize Configuration
+    try:
+        config = EDAConfig.load(CONFIG_PATH, debug=DEBUG_MODE)
+    except Exception as e:
+        sys.exit(f"Configuration failure: {e}")
+
+    # 2. Validate Tool Name
+    tool_path = Path(sys.argv[0])
+    tool_name = tool_path.name
+
+    if tool_path.suffix == ".py":
+        sys.exit(f"Error: Do not run {tool_name} directly. Use a symlink.")
+
+    # 3. Build Payload
+    # Dependency Injection: We can easily switch to BashStrategy if needed
+    shell_strategy = TcshStrategy()
+    builder = RemotePayloadBuilder(config, shell_strategy)
+    remote_command = (
+        builder.with_envmodules_enable(tool_name)
+        .with_passthrough_env()
+        .build(tool_name, sys.argv[1:])
+    )
+
+    # 4. Execute
+    executor = SSHExecutor(config.connection, debug=DEBUG_MODE)
+    sys.exit(executor.execute(remote_command))
+
 
 if __name__ == "__main__":
-    DEBUG = True
-    # get the current tool name
-    tool_name = os.path.basename(sys.argv[0])
-    if tool_name.endswith(".py"):
-        print(f"Do not run {tool_name} directly! Please run the symlinks.")
-        sys.exit(1)
-
-    # define classes
-    config = EDAConfig(debug=DEBUG)
-    env_handler = EnvironmentHandler(config)
-    payload_builder = RemotePayloadBuilder(tool_name, args=sys.argv[1:])
-    ssh_executor = SSHExecutor(config, debug=DEBUG)
-
-    # get environment variable prefix
-    env_prefix = env_handler.build_prefix_command(tool_name)
-    # generate remote ssh command
-    ssh_command = payload_builder.build(env_prefix)
-    # execute the ssh command generated
-    ssh_executor.run(remote_payload=ssh_command)
+    run_proxy()

@@ -1,0 +1,19 @@
+[project]
+name = "eda-with-docker"
+version = "0.1.0"
+description = "Run EDA Tools with Docker Compose!"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+ "pytest",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "ruff>=0.14.10",
+    "ty>=0.0.5",
+]
+
+[tool.pytest]
+pythonpath = [ "." ]
