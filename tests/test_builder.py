@@ -92,7 +92,6 @@ def test_builder_tcsh_payload(mock_config, monkeypatch):
         .build("vcs", ["-full64"])
     )
 
-    print(payload)
     assert "setenv RISCV /opt/riscv" in payload
     assert "setenv NUM_JOBS 32" in payload
     assert "setenv DV_SIMULATORS veri-testharness,spike" in payload
@@ -114,7 +113,6 @@ def test_builder_bash_payload(mock_config, monkeypatch):
         builder.with_envmodules_enable("dv").with_passthrough_env().build("dv", [])
     )
 
-    print(payload)
     assert "export RISCV=/opt/riscv" in payload
     assert "export NUM_JOBS=32" in payload
     assert "export DV_SIMULATORS=veri-testharness,spike" in payload
