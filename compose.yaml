@@ -5,7 +5,6 @@ services:
       dockerfile: rocky/Dockerfile
       pull: false
     image: eda_docker_rocky
-    container_name: eda_docker_rocky_container
     hostname: rocky
     environment:
       - DISPLAY=${DISPLAY}
@@ -28,7 +27,6 @@ services:
       dockerfile: ubuntu/Dockerfile
       pull: false
     image: eda_docker_ubuntu
-    container_name: eda_docker_ubuntu_container
     hostname: ubuntu
     environment:
       - DISPLAY=${DISPLAY}
