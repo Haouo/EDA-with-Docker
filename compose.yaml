@@ -5,13 +5,12 @@ services:
       dockerfile: rocky/Dockerfile
       pull: false
     image: eda_docker_rocky
-    container_name: eda_docker_rocky_container
     hostname: rocky
     environment:
       - DISPLAY=${DISPLAY}
     volumes:
       # shared work directory
-      - shared_workspace:/home/aislab/workspace
+      - project_workspace:/home/aislab/workspace
       # for EDA tools
       - /cad:/cad:ro
       - /sys:/sys:ro # this is important for fixing dc_shell runtime error
@@ -28,13 +27,12 @@ services:
       dockerfile: ubuntu/Dockerfile
       pull: false
     image: eda_docker_ubuntu
-    container_name: eda_docker_ubuntu_container
     hostname: ubuntu
     environment:
       - DISPLAY=${DISPLAY}
     volumes:
       # shared work directory
-      - shared_workspace:/home/aislab/workspace 
+      - project_workspace:/home/aislab/workspace
       # for GUI applications
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     networks:
@@ -48,5 +46,6 @@ networks:
     external: false
 
 volumes:
-  shared_workspace: {}
-  shared_ssh_key: {}
+  project_workspace:
+    external: true
+    name: ${PROJECT_VOLUME}
