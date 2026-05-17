@@ -42,8 +42,12 @@ launch_new_project() {
         docker compose -f "$COMPOSE_FILE" build
     fi
 
+    local volume_name="${project_name}_workspace"
+    docker volume create "$volume_name" > /dev/null
+    echo "Volume: $volume_name"
+
     echo "Launching project '$project_name'..."
-    docker compose -p "$project_name" -f "$COMPOSE_FILE" up -d
+    PROJECT_VOLUME="$volume_name" docker compose -p "$project_name" -f "$COMPOSE_FILE" up -d
 
     # wait briefly for containers to be registered
     sleep 1
@@ -51,6 +55,53 @@ launch_new_project() {
     local container="${project_name}-ubuntu_server-1"
     echo "Attaching to $container..."
     attach_to_container "$container"
+}
+
+teardown_project() {
+    mapfile -t running < <(
+        docker ps \
+            --filter "name=ubuntu" \
+            --filter "status=running" \
+            --format "{{.Names}}" \
+        | sort
+    )
+
+    if [ ${#running[@]} -eq 0 ]; then
+        echo "No running projects found."
+        return
+    fi
+
+    # derive project names from container names (<project>-ubuntu_server-1)
+    local labels=()
+    local projects=()
+    for container in "${running[@]}"; do
+        local project
+        project="${container%-ubuntu_server-1}"
+        labels+=("$project")
+        projects+=("$project")
+    done
+
+    echo "Select a project to turn down:"
+    echo ""
+    local chosen_project=""
+    select label in "${labels[@]}" "Back"; do
+        if [ "$label" = "Back" ]; then
+            return
+        fi
+        for i in "${!labels[@]}"; do
+            if [ "${labels[$i]}" = "$label" ]; then
+                chosen_project="${projects[$i]}"
+                break
+            fi
+        done
+        [ -n "$chosen_project" ] && break
+        echo "Invalid selection, try again."
+    done
+
+    echo "Turning down project '$chosen_project'..."
+    local volume_name="${chosen_project}_workspace"
+    PROJECT_VOLUME="$volume_name" docker compose -p "$chosen_project" -f "$COMPOSE_FILE" down
+    echo "Project '$chosen_project' stopped."
 }
 
 attach_existing_project() {
@@ -99,7 +150,7 @@ attach_existing_project() {
 # main menu
 echo "=== EDA Docker Manager ==="
 echo ""
-select action in "Launch new project" "Attach to existing project" "Quit"; do
+select action in "Launch new project" "Attach to existing project" "Turn down a project" "Quit"; do
     case "$action" in
         "Launch new project")
             launch_new_project
@@ -107,6 +158,10 @@ select action in "Launch new project" "Attach to existing project" "Quit"; do
             ;;
         "Attach to existing project")
             attach_existing_project
+            break
+            ;;
+        "Turn down a project")
+            teardown_project
             break
             ;;
         "Quit")
